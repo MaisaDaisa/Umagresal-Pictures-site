@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" -d '{"titel": "Kai KAaci", "description": "ra ubedurbeaaa", "imdb_rating": 6.9, "director": "Maisa", "genre": [1, 5, 2, 7, 4], "year": 2001}' http://127.0.0.1:5000/api/movies
