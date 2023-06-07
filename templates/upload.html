@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload a Movie</title>
+<link rel="stylesheet" href="/static/upload_style.css">
+</head>
+<body>
+<h1>Upload a Movie</h1>
+<form action="upload.php" method="post">
+<input type="text" name="title" placeholder="Title">
+<input type="text" name="description" placeholder="Description">
+<input type="number" name="imdb_rating" placeholder="IMDb Rating">
+<select name="directors[]" multiple>
+<option value="">Select a Director</option>
+<option value="Steven Spielberg">Steven Spielberg</option>
+<option value="Martin Scorsese">Martin Scorsese</option>
+<option value="Christopher Nolan">Christopher Nolan</option>
+<option value="Quentin Tarantino">Quentin Tarantino</option>
+</select>
+<select name="genres[]" multiple>
+<option value="">Select a Genre</option>
+<option value="Action">Action</option>
+<option value="Adventure">Adventure</option>
+<option value="Comedy">Comedy</option>
+<option value="Drama">Drama</option>
+<option value="Horror">Horror</option>
+<option value="Mystery">Mystery</option>
+<option value="Romance">Romance</option>
+<option value="Sci-Fi">Sci-Fi</option>
+<option value="Thriller">Thriller</option>
+</select>
+<input type="number" name="year" placeholder="Year">
+<input type="submit" value="Upload">
+</form>
+</body>
+</html>

@@ -1,5 +1,5 @@
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -57,6 +57,11 @@ class Directors(db.Model):
             'd_lname': self.d_lname
         }
 
+
+
+
+# API Section for developers to use
+# these use /api as main route
 @app.route('/api/movies')
 def get_movies():
     movies = [movie.to_dict() for movie in Movies.query.all()]
@@ -185,6 +190,19 @@ def delete_director(id):
     db.session.delete(director)
     db.session.commit()
     return "director has been Deleted", 200
+
+
+
+# Display Section of site, where html is being used
+@app.route('/upload')
+def upload_page():
+    return render_template('upload.html')
+
+@app.route('/')
+def index_page():
+    genres = [genre.to_dict() for genre in Genres.query.all()]
+    movies = [movie.to_dict() for movie in Movies.query.all()]
+    return render_template('index.html', movies=movies, genres=genres)
 
 
 with app.app_context():
