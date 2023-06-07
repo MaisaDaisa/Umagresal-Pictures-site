@@ -53,10 +53,11 @@
              <input type="checkbox" id="cant-find-director" name="cant-find-director" onchange="toggleDirectorInputs()">
              <label for="cant-find-director">Can't find?</label>
           </div>
-          <select id="director" name="director[]" multiple>
-            {% for director in directors %}
-              <option value="{{ director.d_id }}">{{ director.d_name }} {{ director.d_lname }}</option>
-            {% endfor %}
+          <select id="director" name="director">
+            <option value="">Select Director</option>
+              {% for director in directors %}
+                  <option value="{{ director.id }}_director">{{ director.name+' '+director.last_name }}</option>
+              {% endfor %}
           </select>
           <div id="director-name-input" style="display: none;">
              <label for="director-name">Director Name:</label>
@@ -72,10 +73,11 @@
              <input type="checkbox" id="cant-find-genre" name="cant-find-genre" onchange="toggleGenreInput()">
              <label for="cant-find-genre">Can't find?</label>
           </div>
-          <select id="genre" name="genre[]" multiple>
-            {% for genre in genres %}
-              <option value="{{ genre.genre }}">{{ genre.genre }}</option>
-            {% endfor %}
+          <select id="genre" name="genre">
+            <option value="">Select Genre</option>
+              {% for genre in genres %}
+                  <option value="{{ genre.genre }}">{{ genre.genre }}</option>
+              {% endfor %}
           </select>
           <div id="genre-name-input" style="display: none;">
              <label for="genre-name">Genre Name:</label>
