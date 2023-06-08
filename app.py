@@ -212,7 +212,7 @@ def index_page():
     return render_template('index.html', movies=movies, genres=genres)
 
 @app.route('/api/movies/top')
-def get_top():
+def main_get_top():
     movies = [movie.to_dict() for movie in Movies.query.order_by(Movies.imdb_rating.desc()).limit(10)]
     return movies
 
