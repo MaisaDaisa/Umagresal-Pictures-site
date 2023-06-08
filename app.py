@@ -1,7 +1,7 @@
-
+import random
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-
+import webbroser
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
@@ -211,15 +211,37 @@ def index_page():
     movies = [movie.to_dict() for movie in Movies.query.all()]
     return render_template('index.html', movies=movies, genres=genres)
 
+@app.route('/api/movies/top_10')
+def get_top():
+    movies = Movies.query.order_by(Movies.imdb_rating.desc()).limit(10).all()
+    top_movies = [movie.to_dict() for movie in movies]
+    return json(top_movies)
+
+@app.route('/movies/<int:idnum>')
+def movie_info(id):
+    movie = Movies.query.filter_by(id=id).first()
+    movie_url = f"https://your-website.com/movies/{idnum}"  # Replace with your website URL
+    webbrowser.open_new_tab(movie_url)
+  
+
+
 @app.route('/movies/<int:idnum>')
 def movie_info(idnum):
     movie = Movies.query.filter_by(id=idnum).first()
     if movie is None:
         return "No Page Found"
     else:
-        return movie.to_dict()
+        director_movies = Movies.query.filter_by(director=movie.director).all()
+        random_movie = random.choice(director_movies)
+        return render_template('movie_info.html', movie=movie, recommendation=random_movie)
+import random
 
-
+@app.route('/movies/<int:idnum>')
+def movie_info(id):
+    movie = Movies.query.filter_by(id=id).first()
+    director_movies = Movies.query.filter_by(director=movie.director).all()
+    random_movie = random.choice(director_movies)
+    return recommendation=random_movie.limit(5)
 
 
 with app.app_context():
