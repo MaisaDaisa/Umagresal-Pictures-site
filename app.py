@@ -1,5 +1,5 @@
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -57,6 +57,11 @@ class Directors(db.Model):
             'd_lname': self.d_lname
         }
 
+
+
+
+# API Section for developers to use
+# these use /api as main route
 @app.route('/api/movies')
 def get_movies():
     movies = [movie.to_dict() for movie in Movies.query.all()]
@@ -185,6 +190,33 @@ def delete_director(id):
     db.session.delete(director)
     db.session.commit()
     return "director has been Deleted", 200
+
+@app.route('/api/movies/top')
+def get_top():
+    movies = [movie.to_dict() for movie in Movies.query.order_by(Movies.imdb_rating.desc()).limit(10)]
+    return movies
+
+
+# Display Section of site, where html is being used
+@app.route('/upload')
+def upload_page():
+    directors = [director.to_dict() for director in Directors.query.order_by(Directors.d_lname).all()]
+    genres = [genre.to_dict() for genre in Genres.query.order_by(Genres.genre).all()]
+    return render_template('upload.html', directors=directors, genres=genres)
+
+
+@app.route('/')
+def index_page():
+    genres = [genre.to_dict() for genre in Genres.query.order_by(Genres.genre).all()]
+    movies = [movie.to_dict() for movie in Movies.query.all()]
+    return render_template('index.html', movies=movies, genres=genres)
+
+@app.route('/api/movies/top')
+def main_get_top():
+    movies = [movie.to_dict() for movie in Movies.query.order_by(Movies.imdb_rating.desc()).limit(10)]
+    return movies
+
+
 
 
 with app.app_context():
