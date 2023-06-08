@@ -1,5 +1,5 @@
 
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -211,10 +211,13 @@ def index_page():
     movies = [movie.to_dict() for movie in Movies.query.all()]
     return render_template('index.html', movies=movies, genres=genres)
 
-@app.route('/api/movies/top')
-def main_get_top():
-    movies = [movie.to_dict() for movie in Movies.query.order_by(Movies.imdb_rating.desc()).limit(10)]
-    return movies
+@app.route('/movies/<int:idnum>')
+def movie_info(idnum):
+    movie = Movies.query.filter_by(id=idnum).first()
+    if movie is None:
+        return "No Page Found"
+    else:
+        return movie.to_dict()
 
 
 
