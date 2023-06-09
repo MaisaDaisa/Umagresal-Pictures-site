@@ -208,10 +208,34 @@ def upload_page():
 
 
 @app.route('/')
-def index_page():
-    genres = [genre.to_dict() for genre in Genres.query.order_by(Genres.genre).all()]
-    movies = [movie.to_dict() for movie in Movies.query.all()]
-    return render_template('index.html', movies=movies, genres=genres)
+def index():
+    year = request.args.get('year')
+    genre = request.args.get('genre')
+
+
+    if year:
+        thing = Movies.query.filter_by(year=year)
+    if genre:
+        thing = Movies.query.filter_by(genre=genre)
+
+
+    movies = Movies.query.all()
+    years = sorted(set([movie.year for movie in movies]))
+    years = []
+    genres = []
+    for movie in movies:
+        years.append(movie.year)
+        genres.append(movie.genre)
+    genres = sorted(set([movie.genre for movie in movies]))
+    print(years)
+    print(genres)
+    return render_template('index.html', movies=movies, years=years, genres=genres)
+
+@app.route('/search')
+def search_results():
+    query = request.args.get('query')
+    movies = Movies.query.filter(Movies.titel.ilike(f'%{query}%')).all()
+    return render_template('search_results.html', movies=movies)
 
 
 @app.route('/api/movies/top_10')

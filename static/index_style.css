@@ -1,79 +1,99 @@
-body {
-  font-family: sans-serif;
+/* Style for header section */
+header {
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  position: relative;
 }
 
 h1 {
-  text-align: center;
+  font-size: 36px;
+  margin: 0;
 }
 
-header {
-  background-color: #000;
-  color: #fff;
-  padding: 20px;
-}
-
-nav {
-  float: left;
-  width: 20%;
-}
-
-ul {
-  list-style-type: none;
-}
-
-li {
-  margin-bottom: 10px;
-}
-
-a {
-  color: #fff;
-}
-
-main {
-  margin-top: 20px;
-}
-
-h2 {
-  text-align: center;
-}
-
-input {
-  width: 50%;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-
-select {
-  width: 50%;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-
-.filters {
-  margin-top: 20px;
-}
-
-.movies {
-  margin-top: 20px;
-}
-
-ul {
-  list-style-type: none;
+nav ul {
+  list-style: none;
+  display: flex;
   margin: 0;
   padding: 0;
 }
 
-li {
-  width: 25%;
-  float: left;
-  margin: 0 1%;
+nav li {
+  margin: 0 10px;
 }
 
-img {
-  width: 100%;
+nav a {
+  color: #fff;
+  text-decoration: none;
 }
 
-footer {
-  text-align: center;
+header form {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+header form input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  width: 200px;
+}
+
+header form button[type="submit"] {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Style for main section */
+main {
   padding: 20px;
+}
+
+h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.movies {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.movies li {
+  margin-right: 20px;
+  margin-bottom: 20px;
+  list-style: none;
+  max-width: 200px;
+}
+
+.movies img {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.movies p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Style for footer section */
+footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
 }

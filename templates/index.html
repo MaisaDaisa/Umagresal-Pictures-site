@@ -14,35 +14,26 @@
                <li><a href="#">About</a></li>
             </ul>
          </nav>
+          <form action="{{ url_for('search_results') }}" method="get">
+    <input type="text" name="query" placeholder="Search">
+    <button type="submit">Search</button>
+  </form>
       </header>
       <main>
          <h2>Discover Umagresal Movies</h2>
-         <input type="text" placeholder="Search">
-         <div class="filters">
-            <select name="year">
-              <option value="">Select a year</option>
-                {% for year in range(1950, 2024) %}
-                  <option value="{{ year }}">{{ year }}</option>
-                {% endfor %}
-            </select>
-            <select name="genres">
-              <option value="">Select Genre</option>
-              {% for genre in genres %}
-               <option value="{{ genre.genre }}">{{ genre.genre }}</option>
-              {% endfor %}
-            </select>
-         </div>
          <section class="movies">
-            <ul>
-              {% for movie in movies %}
-              <li>
-              <a href="#">{{ movie.title }}</a>
-              <img src="/static/movie_pictures/{{ movie.id }}.jpg" style="width: 200px; height: 300px;">
-              </li>
-              <p> titel: {{movie.titel}}</p>
-              {% endfor %}
-            </ul>
-         </section>
+  <ul>
+    {% for movie in movies %}
+      <li>
+        <a href="/movies/{{ movie.id }}">
+          <img src="/static/movie_pictures/{{ movie.id }}.jpg" alt="{{ movie.title }}" style="width: 200px; height: 300px;">
+          <h3>{{ movie.title }}</h3>
+          <p>{{ movie.titel }}</p>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
       </main>
       <footer>
          <p>Copyright &copy; 2023 Umagrsal Movies</p>

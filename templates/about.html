@@ -1,10 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html>
+  <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
+    <title>Movie Database</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      h1 {
+        text-align: center;
+        margin-top: 20px;
+      }
+      p {
+        margin: 5px 0;
+      }
+      select {
+        margin-bottom: 10px;
+      }
+      hr {
+        margin: 20px 0;
+        border: none;
+        border-top: 1px solid #ccc;
+      }
+      .movie {
+        display: inline-block;
+        width: 200px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        box-shadow: 2px 2px 5px #ccc;
+      }
+      .movie img {
+        width: 150px;
+        height: 200px;
+        margin-bottom: 10px;
+      }
+      .movie h2 {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      .movie p {
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      .movie p:first-child {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Movie Database</h1>
+    <p>Filter by genre:</p>
+    <select id="genre_select">
+      <option value="">All Genres</option>
+      <option value="Action">Action</option>
+      <option value="Comedy">Comedy</option>
+      <option value="Drama">Drama</option>
+      <option value="Horror">Horror</option>
+      <option value="Sci-Fi">Sci-Fi</option>
+    </select>
+    <p>Filter by director:</p>
+    <select id="director_select">
+      <option value="">All Directors</option>
+      <option value="Christopher Nolan">Christopher Nolan</option>
+      <option value="David Fincher">David Fincher</option>
+      <option value="Martin Scorsese">Martin Scorsese</option>
+      <option value="Quentin Tarantino">Quentin Tarantino</option>
+      <option value="Steven Spielberg">Steven Spielberg</option>
+    </select>
+    <hr>
+    <div id="movie_list">
+      <div class="movie">
+        <img src="movie1.jpg" alt="Movie 1">
+        <h2>Movie 1</h2>
+        <p>Description of Movie 1</p>
+        <p>IMDb Rating: 8.5</p>
+        <p>Director: Christopher Nolan</p>
+        <p>Genres: Action, Sci-Fi</p>
+      </div>
+      <div class="movie">
+        <img src="movie2.jpg" alt="Movie 2">
+        <h2>Movie 2</h2>
+        <p>Description of Movie 2</p>
+        <p>IMDb Rating: 7.9</p>
+        <p>Director: David Fincher</p>
+        <p>Genres: Drama, Thriller</p>
+      </div>
+      <div class="movie">
+        <img src="movie3.jpg" alt="Movie 3">
+        <h2>Movie 3</h2>
+        <p>Description of Movie 3</p>
+        <p>IMDb Rating: 9.0</p>
+        <p>Director: Martin Scorsese</p>
+        <p>Genres: Crime, Drama</p>
+      </div>
+      <div class="movie">
+        <img src="movie4.jpg" alt="Movie 4">
+        <h2>Movie 4</h2>
+        <p>Description of Movie 4</p>
+        <p>IMDb Rating: 8.2</p>
+        <p>Director: Quentin Tarantino</p>
+        <p>Genres: Action, Crime, Thriller</p>
+      </div>
+      <div class="movie">
+        <img src="movie5.jpg" alt="Movie 5">
+        <h2>Movie 5</h2>
+        <p>Description of Movie 5</p>
+        <p>IMDb Rating: 8.9</p>
+        <p>Director: Steven Spielberg</p>
+        <p>Genres: Drama, History, War</p>
+      </div>
+    </div>
+    <script>
+      // get the select elements
+      var genre_select = document.getElementById("genre_select");
+      var director_select = document.getElementById("director_select");
+      // get the movie elements
+      var movies = document.getElementsByClassName("movie");
+      // add event listeners to the select elements
+      genre_select.addEventListener("change", filterMovies);
+      director_select.addEventListener("change", filterMovies);
+      // define the filterMovies function
+      function filterMovies() {
+        // get the selected values
+        var selected_genre = genre_select.value;
+        var selected_director = director_select.value;
+        // loop over the movies and hide/show them based on their attributes
+        for (var i = 0; i < movies.length; i++) {
+          var movie_genre = movies[i].querySelectorAll("p")[3].textContent.split(": ")[1];
+          var movie_director = movies[i].querySelectorAll("p")[4].textContent.split(": ")[1];
+          if ((selected_genre == "" || movie_genre.includes(selected_genre)) &&
+              (selected_director == "" || movie_director == selected_director)) {
+            movies[i].style.display = "inline-block";
+          } else {
+            movies[i].style.display = "none";
+          }
+        }
+      }
+    </script>
+  </body>
 </html>
