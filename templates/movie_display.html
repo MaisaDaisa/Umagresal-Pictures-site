@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
+<html>
+  <head>
+    <title>Movie Recommendations</title>
+    <link rel="stylesheet" type="text/css" href="/static/movie_display.css">
+  </head>
+  <body>
+    <div class="movie">
+      <h2>{{ movie.title }}</h2>
+      <img src="{{ movie.photo_url }}" alt="{{ movie.title }} Photo">
+      <p>{{ movie.description }}</p>
+      <p>IMDB Rating: {{ movie.imdb_rating }}</p>
+      {% for genre in used_genres %}
+      <p>Genres: {{ genre.genre }}</p>
+      {% endfor %}
+      {% for director in participated_directors %}
+      <p>Directors: {{ director.d_fullname }}</p>
+      {% endfor %}
+      <p>Year: {{ movie.year }}</p>
+    </div>
+    <div class="recommendations">
+      {% for director in recommended_movies %}
+      <h3>Movie Recommendations for {{ director.f_fullname }}</h3>
+      <ul>
+        {% for movie in director['movies'] %}
+        <li>{{ movie.titel }}</li>
+        {% endfor %}
+      </ul>
+      {% endfor %}
+    </div>
+  </body>
 </html>

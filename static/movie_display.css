@@ -1,0 +1,18 @@
+.movie {
+  margin-bottom: 50px;
+}
+
+.movie img {
+  width: 200px;
+  height: 300px;
+  margin-right: 20px;
+  float: left;
+}
+
+.movie p {
+  margin-bottom: 10px;
+}
+
+.recommendations {
+  margin-top: 20px;
+}

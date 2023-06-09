@@ -1,12 +1,10 @@
 import random
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
-import webbroser
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
 db = SQLAlchemy(app)
-
 
 
 class Movies(db.Model):
@@ -19,9 +17,7 @@ class Movies(db.Model):
     genre = db.Column(db.String)
     year = db.Column(db.Integer)
 
-
     def to_dict(self):
-
         return {
             'id': self.id,
             'titel': self.titel,
@@ -31,8 +27,9 @@ class Movies(db.Model):
             'genre': self.genre.split(','),
             'year': self.year
         }
-class Genres(db.Model):
 
+
+class Genres(db.Model):
     __tablename__ = 'genres'
     g_id = db.Column(db.Integer, primary_key=True)
     genre = db.Column(db.String(255), unique=True)
@@ -58,14 +55,13 @@ class Directors(db.Model):
         }
 
 
-
-
 # API Section for developers to use
 # these use /api as main route
 @app.route('/api/movies')
 def get_movies():
     movies = [movie.to_dict() for movie in Movies.query.all()]
     return movies, 200
+
 
 @app.route('/api/movies/<int:id>')
 def get_movie_by_id(id):
@@ -82,7 +78,8 @@ def create_movie():
     director = ','.join(str(x) for x in sorted(data['director']))
     genre = ','.join(str(x) for x in sorted(data['genre']))
     year = data['year']
-    movie = Movies(titel=titel, description=description, imdb_rating=imdb_rating, director=director, genre=genre, year=year)
+    movie = Movies(titel=titel, description=description, imdb_rating=imdb_rating, director=director, genre=genre,
+                   year=year)
     db.session.add(movie)
     db.session.commit()
     return "Movie has been Added", 201
@@ -116,15 +113,18 @@ def delete_movie(id):
     db.session.commit()
     return "Movie has been Deleted", 200
 
+
 @app.route('/api/genres')
 def get_genres():
     genres = [genre.to_dict() for genre in Genres.query.all()]
     return genres, 200
 
+
 @app.route('/api/genres/<int:id>')
 def get_genre_by_id(id):
     genre = Genres.query.get(id)
     return genre.to_dict(), 200
+
 
 @app.route('/api/genres', methods=['POST'])
 def create_genre():
@@ -134,6 +134,7 @@ def create_genre():
     db.session.add(payload)
     db.session.commit()
     return "Genre has been Added", 201
+
 
 @app.route('/api/genres/<int:id>', methods=['PUT'])
 def update_genre(id):
@@ -145,6 +146,7 @@ def update_genre(id):
         db.session.commit()
     return "Genre Has Been Updated", 200
 
+
 @app.route('/api/genres/<int:id>', methods=['DELETE'])
 def delete_genre(id):
     genre = Genres.query.get(id)
@@ -152,15 +154,18 @@ def delete_genre(id):
     db.session.commit()
     return "Genre has been Deleted", 200
 
+
 @app.route('/api/directors')
 def get_director():
     directors = [director.to_dict() for director in Directors.query.all()]
     return directors, 200
 
+
 @app.route('/api/directors/<int:id>')
 def get_directors_by_id(id):
     director = Directors.query.get(id)
     return director.to_dict(), 200
+
 
 @app.route('/api/directors', methods=['POST'])
 def create_director():
@@ -171,6 +176,7 @@ def create_director():
     db.session.add(payload)
     db.session.commit()
     return "Director has been Added", 201
+
 
 @app.route('/api/directors/<int:id>', methods=['PUT'])
 def update_director(id):
@@ -184,17 +190,13 @@ def update_director(id):
         db.session.commit()
     return "director Has Been Updated", 200
 
+
 @app.route('/api/directors/<int:id>', methods=['DELETE'])
 def delete_director(id):
     director = Directors.query.get(id)
     db.session.delete(director)
     db.session.commit()
     return "director has been Deleted", 200
-
-@app.route('/api/movies/top')
-def get_top():
-    movies = [movie.to_dict() for movie in Movies.query.order_by(Movies.imdb_rating.desc()).limit(10)]
-    return movies
 
 
 # Display Section of site, where html is being used
@@ -211,38 +213,46 @@ def index_page():
     movies = [movie.to_dict() for movie in Movies.query.all()]
     return render_template('index.html', movies=movies, genres=genres)
 
+
 @app.route('/api/movies/top_10')
 def get_top():
-    movies = Movies.query.order_by(Movies.imdb_rating.desc()).limit(10).all()
-    top_movies = [movie.to_dict() for movie in movies]
-    return json(top_movies)
-
-@app.route('/movies/<int:idnum>')
-def movie_info(id):
-    movie = Movies.query.filter_by(id=id).first()
-    movie_url = f"https://your-website.com/movies/{idnum}"  # Replace with your website URL
-    webbrowser.open_new_tab(movie_url)
-  
+    movies = [movie.to_dict() for movie in Movies.query.order_by(Movies.imdb_rating.desc()).limit(10)]
+    return movies
 
 
-@app.route('/movies/<int:idnum>')
+@app.route('/movies/<int:idnum>', methods=['POST', 'GET'])
 def movie_info(idnum):
     movie = Movies.query.filter_by(id=idnum).first()
+
+    # Now we Search for Directors
+    participated_directors_num = [num for num in movie.to_dict()['director']]
+    participated_directors = []
+    for num in participated_directors_num:
+        director = Directors.query.get(num).to_dict()
+        director_dict = {'d_id': director['d_id'], 'd_fullname': director['d_name']+' '+director['d_lname']}
+        participated_directors.append(director_dict)
+
+    # All used genres used in Movie
+    genre_num = [num for num in movie.to_dict()["genre"]]
+    used_genres = []
+    for num in genre_num:
+        genre = Genres.query.get(num)
+        used_genres.append(genre.to_dict())
+
+    recommended_movies = []
+    for direcotor in participated_directors:
+        d_num = direcotor["d_id"]
+        d_movies = Movies.query.filter((Movies.director.like(str(d_num) + ',%')) |
+                                        (Movies.director.like('%,' + str(d_num) + ',%')) |
+                                        (Movies.director.like('%,' + str(d_num)))).all()
+        dicted_movies = [d_movie.to_dict() for d_movie in d_movies]
+        recommended_movies.append({'d_id': d_num, 'd_fullname': direcotor['d_fullname'], 'movies': dicted_movies})
+
+
     if movie is None:
         return "No Page Found"
     else:
-        director_movies = Movies.query.filter_by(director=movie.director).all()
-        random_movie = random.choice(director_movies)
-        return render_template('movie_info.html', movie=movie, recommendation=random_movie)
-import random
-
-@app.route('/movies/<int:idnum>')
-def movie_info(id):
-    movie = Movies.query.filter_by(id=id).first()
-    director_movies = Movies.query.filter_by(director=movie.director).all()
-    random_movie = random.choice(director_movies)
-    return recommendation=random_movie.limit(5)
-
+        return render_template('movie_display.html', movie=movie, participated_directors=participated_directors, used_genres=used_genres, recommended_movies=recommended_movies)
 
 with app.app_context():
     db.create_all()
