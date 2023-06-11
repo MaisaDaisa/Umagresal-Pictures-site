@@ -1,13 +1,6 @@
 import sqlite3
 
 
-class Director:
-    def __init__(self, d_id, d_name, d_lname):
-        self.d_id = d_id
-        self.d_name = d_name
-        self.d_lname = d_lname
-
-
 class MoviesDatabase:
     def __init__(self):
         self.conn = sqlite3.connect('movies.db', check_same_thread=False)

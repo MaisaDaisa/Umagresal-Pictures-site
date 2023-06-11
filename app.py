@@ -4,11 +4,15 @@ from Database import DirectorDatabase
 from Database import GenreDatabase
 from Database import MovieGenreConnect
 from Database import MovieDirectorConnect
-from flask import Flask, request, render_template, abort
+from flask import Flask, request, render_template, abort, url_for, redirect
+from MyForm import MyForm
+from werkzeug.utils import secure_filename
+import os
 import sqlite3
 
 app = Flask(__name__)
 app.config['DATABASE'] = '/movies.db'
+app.config['SECRET_KEY'] = 'your-secret-key'
 moviesdb = MoviesDatabase()
 genredb = GenreDatabase()
 directordb = DirectorDatabase()
@@ -223,13 +227,67 @@ def index():
     movies = moviesdb.get_all_movies()
     return render_template('index.html', movies=movies)
 
+@app.route('/create', methods=['GET', 'POST'])
+def create_movie_form():
+    form = MyForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        description = form.description.data
+        imdb_rating = form.imdb_rating.data
+        year = form.year.data
+        genres = form.genres.data
+        directors = form.directors.data
+        image = form.image.data
+        movie_id = moviesdb.add_movie(title, description, imdb_rating, year)
+        if type(directors) is list:
+            for director in directors:
+                if type(director) is (int or float):
+                    moviedirector.add_reference(movie_id, int(director))
+                else:
+                    try:
+                        d_name = director.split()[0]
+                        d_lname = director.split()[1]
+                        if not directordb.director_exists(d_name, d_lname):
+                            director_id = directordb.add_director(d_name, d_lname)
+                            moviedirector.add_reference(movie_id, director_id)
+                        elif directordb.director_exists(d_name, d_lname):
+                            director_id = directordb.get_director_by_fullname(d_name, d_lname)
+                            moviedirector.add_reference(movie_id, director_id)
+                    except IndexError:
+                        abort(404, 'Problem adding director, please check instructions of payload'),
+
+        if type(genres) is list:
+            for genre in genres:
+                if type(genre) is (int or float):
+                    moviegenre.add_reference(movie_id, int(genre))
+                else:
+                    try:
+                        genre = str(genre)
+                        if not genredb.genre_exists(genre):
+                            genre_id = genredb.add_genre(genre)
+                            moviegenre.add_reference(movie_id, genre_id)
+                        elif genredb.genre_exists(genre):
+                            genre_id = genredb.get_genre_id_by_name(genre)
+                            moviegenre.add_reference(movie_id, genre_id)
+                    except IndexError:
+                        abort(404, 'Problem adding Genre, Please Check instructions of payload'),
+        print(directors)
+        print(title)
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(
+            app.instance_path, 'photos', filename
+        ))
+    return render_template('create.html', form=form)
+
+
+
 @app.route('/search')
 def search_results():
     query = request.args.get('query')
     movies = moviesdb.search_movies_by_title(f'%{query}%')
     return render_template('search_results.html', movies=movies)
 
-@app.route('/movies/<int:idnum>', methods=['POST', 'GET'])
+@app.route('/movies/<int:idnum>', methods=['GET'])
 def movie_info(idnum):
     movie = moviesdb.get_movie_by_id(idnum)
 
