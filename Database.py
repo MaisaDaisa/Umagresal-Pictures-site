@@ -85,17 +85,25 @@ class MoviesDatabase:
 
     def get_top10(self):
         self.cursor.execute("""
-           SELECT * FROM movies ORDER BY imdb_rating DESC LIMIT 10
+           SELECT m.id, m.title, m.description, m.imdb_rating, m.year, GROUP_CONCAT(DISTINCT md.director_id) AS directors, GROUP_CONCAT(DISTINCT mg.genre_id) AS genres
+                FROM movies as m
+                JOIN movie_director as md ON m.id = md.movie_id
+                JOIN movie_genre as mg ON m.id = mg.movie_id
+                GROUP BY m.id, m.title
+                ORDER BY imdb_rating DESC LIMIT 10;
            """)
         rows = self.cursor.fetchall()
-        return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
+        return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year', 'directors', 'genres'),
+                         (row[0], row[1], row[2], row[3], row[4], [int(d) for d in row[5].split(',')],
+                          [int(g) for g in row[6].split(',')]))) for row in rows]
+
 
     def get_movies_by_year(self, year):
-        self.cursor.execute("""
-           SELECT * FROM movies
-           WHERE year=?""", (year,))
-        rows = self.cursor.fetchall()
-        return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
+            self.cursor.execute("""
+               SELECT * FROM movies
+               WHERE year=?""", (year,))
+            rows = self.cursor.fetchall()
+            return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
 
     def get_movies_by_genre(self, genre_id):
         self.cursor.execute("""

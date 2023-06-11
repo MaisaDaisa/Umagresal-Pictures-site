@@ -15,6 +15,7 @@ directordb = DirectorDatabase()
 moviegenre = MovieGenreConnect()
 moviedirector = MovieDirectorConnect()
 
+
 # API Section for developers to use
 # these use /api as main route
 @app.route('/api/movies')
@@ -129,7 +130,7 @@ def delete_movie(id):
     moviedirector.delete_references_by_movie_id(id)
     return "Movie has been Deleted", 200
 
-@app.route('/api/movies/top_10')
+@app.route('/api/movies/top')
 def get_top():
     movies = moviesdb.get_top10()
     return movies
