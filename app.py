@@ -240,7 +240,7 @@ def movie_info(idnum):
 
     recommended_movies = []
     for direcotor in participated_directors:
-        d_movies = moviedirector.get_movies_by_by(direcotor["d_id"])
+        d_movies = moviedirector.get_movies_by_director_id(direcotor["d_id"])
         recommended_movies.append({'d_id': direcotor["d_id"], 'd_fullname': direcotor['d_fullname'], 'movies': d_movies})
     print(recommended_movies)
 

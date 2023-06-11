@@ -418,7 +418,7 @@ class MovieDirectorConnect:
 
     def get_directos_by_movie(self, movie_id):
         self.cursor.execute("""
-            SELECT directors.d_id, directors.d_name || ' ' || directors.d_lname AS d_fullname
+            SELECT distinct directors.d_id, directors.d_name || ' ' || directors.d_lname AS d_fullname
             FROM movie_director
             JOIN directors ON movie_director.director_id = directors.d_id
             WHERE movie_id=?
@@ -430,10 +430,11 @@ class MovieDirectorConnect:
         self.cursor.execute("""
             SELECT * FROM movies
             WHERE id IN (
-                  SELECT movie_id
+                  SELECT distinct movie_id
                   FROM movie_director 
                   WHERE director_id = ?
                   )
+            ORDER BY imdb_rating DESC LIMIT 10
            """, (director_id,))
         rows = self.cursor.fetchall()
         return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
