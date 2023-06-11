@@ -7,11 +7,6 @@ class Director:
         self.d_name = d_name
         self.d_lname = d_lname
 
-class Genre:
-    def __init__(self, g_id, genre):
-        self.g_id = g_id
-        self.genre = genre
-
 
 class MoviesDatabase:
     def __init__(self):
@@ -28,17 +23,19 @@ class MoviesDatabase:
         """)
 
     def add_movie(self, title, description, imdb_rating, year):
+        last_id = self.get_last_id()+1
         self.cursor.execute("""
             INSERT INTO movies VALUES 
             (?, ?, ?, ?, ?)
-        """, (self.get_last_id()+1, title, description, imdb_rating, year))
+        """, (last_id, title, description, imdb_rating, year))
         self.conn.commit()
+        return last_id
 
-    def update_movie(self, id, description, imdb_rating, year):
+    def update_movie(self, id, titel, description, imdb_rating, year):
         self.cursor.execute("""
         UPDATE movies SET title=?, description=?, imdb_rating=?, year=?
         WHERE id=?
-        """, (description, imdb_rating, year, id))
+        """, (titel, description, imdb_rating, year, id))
         self.conn.commit()
 
     def get_movie_by_id(self, id):
@@ -57,6 +54,34 @@ class MoviesDatabase:
            """)
         rows = self.cursor.fetchall()
         return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
+
+    def get_all_movies_across_tables(self):
+        self.cursor.execute("""
+                SELECT m.id, m.title, m.description, m.imdb_rating, m.year, GROUP_CONCAT(DISTINCT md.director_id) AS directors, GROUP_CONCAT(DISTINCT mg.genre_id) AS genres
+                FROM movies as m
+                JOIN movie_director as md ON m.id = md.movie_id
+                JOIN movie_genre as mg ON m.id = mg.movie_id
+                GROUP BY m.id, m.title;
+                   """)
+        rows = self.cursor.fetchall()
+        return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year', 'directors', 'genres'),
+                         (row[0], row[1], row[2], row[3], row[4], [int(d) for d in row[5].split(',')], [int(g) for g in row[6].split(',')]))) for row in rows]
+
+    def get_movie_across_tables_by_id(self, id):
+        self.cursor.execute("""
+                SELECT m.id, m.title, m.description, m.imdb_rating, m.year, GROUP_CONCAT(DISTINCT md.director_id) AS directors, GROUP_CONCAT(DISTINCT mg.genre_id) AS genres
+                FROM movies as m
+                JOIN movie_director as md ON m.id = md.movie_id
+                JOIN movie_genre as mg ON m.id = mg.movie_id
+                WHERE m.id = ?
+                GROUP BY m.id, m.title;
+                   """, (id,))
+        row = self.cursor.fetchone()
+        if row is None:
+            return None
+        else:
+            return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year', 'directors', 'genres'),
+                             (row[0], row[1], row[2], row[3], row[4], [int(d) for d in row[5].split(',')], [int(g) for g in row[6].split(',')])))]
 
     def get_top10(self):
         self.cursor.execute("""
@@ -124,11 +149,13 @@ class GenreDatabase:
         """)
 
     def add_genre(self, genre):
+        g_id = self.get_last_g_id() + 1
         self.cursor.execute("""
             INSERT INTO genres VALUES 
             (?, ?)
-        """, (self.get_last_g_id() + 1, genre))
+        """, (g_id, genre))
         self.conn.commit()
+        return g_id
 
     def update_genre(self, g_id, genre):
         self.cursor.execute("""
@@ -159,6 +186,23 @@ class GenreDatabase:
         row = self.cursor.fetchone()
         return dict(zip(('g_id', 'genre'), row))
 
+    def get_genre_id_by_name(self, genre):
+        self.cursor.execute("""
+            SELECT g_id FROM genres WHERE genre=?
+        """, (genre,))
+        row = self.cursor.fetchone()
+        if row:
+            return dict(zip(('g_id',), row))['g_id']
+        else:
+            return None
+        
+    def genre_exists(self, genre):
+        self.cursor.execute("""
+               SELECT * FROM genres WHERE genre=?
+           """, (genre, ))
+        row = self.cursor.fetchone()
+        return row is not None
+
     def delete_genre(self, g_id):
         self.cursor.execute("""
             DELETE FROM genres
@@ -176,7 +220,6 @@ class GenreDatabase:
         return row[0]
 
 class DirectorDatabase:
-
     def __init__(self):
         self.conn = sqlite3.connect('movies.db', check_same_thread=False)
         self.cursor = self.conn.cursor()
@@ -189,11 +232,13 @@ class DirectorDatabase:
         """)
 
     def add_director(self, d_name, d_lname):
+        d_id = self.get_last_d_id() + 1
         self.cursor.execute("""
             INSERT INTO directors VALUES 
             (?, ?, ?)
-        """, (self.get_last_d_id() + 1, d_name, d_lname))
+        """, (d_id, d_name, d_lname))
         self.conn.commit()
+        return d_id
 
     def update_director(self, d_id, d_name, d_lname):
         self.cursor.execute("""
@@ -224,6 +269,23 @@ class DirectorDatabase:
         row = self.cursor.fetchone()
         return dict(zip(('d_id', 'd_name', 'd_lname'), row))
 
+    def get_director_by_fullname(self, d_name, d_lname):
+        self.cursor.execute("""
+            SELECT d_id FROM directors WHERE d_name=? AND d_lname=?
+        """, (d_name, d_lname))
+        row = self.cursor.fetchone()
+        if row:
+            return dict(zip(('d_id',), row))['d_id']
+        else:
+            return None
+
+    def director_exists(self, d_name, d_lname):
+        self.cursor.execute("""
+               SELECT * FROM directors WHERE d_name=? AND d_lname=?
+           """, (d_name, d_lname))
+        row = self.cursor.fetchone()
+        return row is not None
+
     def delete_director(self, d_id):
         self.cursor.execute("""
             DELETE FROM directors
@@ -241,7 +303,6 @@ class DirectorDatabase:
         return row[0]
 
 class MovieGenreConnect:
-
     def __init__(self):
         self.conn = sqlite3.connect('movies.db', check_same_thread=False)
         self.cursor = self.conn.cursor()
@@ -276,6 +337,20 @@ class MovieGenreConnect:
         """, (id,))
         self.conn.commit()
 
+    def delete_references_by_movie_id(self, movie_id):
+        self.cursor.execute("""
+               DELETE FROM movie_genre
+               WHERE movie_id=?
+           """, (movie_id,))
+        self.conn.commit()
+        
+    def delete_references_by_genre_id(self, genre_id):
+        self.cursor.execute("""
+               DELETE FROM movie_genre
+               WHERE genre_id=?
+           """, (genre_id,))
+        self.conn.commit()
+
     def get_genres_by_movie(self, movie_id):
         self.cursor.execute("""
             SELECT g_id, genre FROM movie_genre
@@ -284,6 +359,7 @@ class MovieGenreConnect:
            """, (movie_id,))
         rows = self.cursor.fetchall()
         return [dict(zip(('g_id', 'genre'), row)) for row in rows]
+
 
     def get_last_id(self):
         self.cursor.execute("""
@@ -324,6 +400,7 @@ class MovieDirectorConnect:
         """, (movie_id, director_id, id))
         self.conn.commit()
 
+
     def delete_reference(self, id):
         self.cursor.execute("""
             DELETE FROM movie_director
@@ -341,7 +418,7 @@ class MovieDirectorConnect:
         rows = self.cursor.fetchall()
         return [dict(zip(('d_id', 'd_fullname'), row)) for row in rows]
 
-    def get_movies_by_by(self, director_id):
+    def get_movies_by_director_id(self, director_id):
         self.cursor.execute("""
             SELECT * FROM movies
             WHERE id IN (
@@ -352,6 +429,20 @@ class MovieDirectorConnect:
            """, (director_id,))
         rows = self.cursor.fetchall()
         return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
+
+    def delete_references_by_movie_id(self, movie_id):
+        self.cursor.execute("""
+               DELETE FROM movie_director
+               WHERE movie_id=?
+           """, (movie_id,))
+        self.conn.commit()
+
+    def delete_references_by_director_id(self, director_id):
+        self.cursor.execute("""
+               DELETE FROM movie_director
+               WHERE director_id=?
+           """, (director_id,))
+        self.conn.commit()
 
     def get_last_id(self):
         self.cursor.execute("""

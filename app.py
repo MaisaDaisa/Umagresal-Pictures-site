@@ -4,7 +4,7 @@ from Database import DirectorDatabase
 from Database import GenreDatabase
 from Database import MovieGenreConnect
 from Database import MovieDirectorConnect
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, abort
 import sqlite3
 
 app = Flask(__name__)
@@ -19,14 +19,14 @@ moviedirector = MovieDirectorConnect()
 # these use /api as main route
 @app.route('/api/movies')
 def get_movies():
-    movies = moviesdb.get_all_movies()
+    movies = moviesdb.get_all_movies_across_tables()
     print(movies)
     return movies, 200
 
 
 @app.route('/api/movies/<int:id>')
 def get_movie_by_id(id):
-    movie = moviesdb.get_movie_by_id(id)
+    movie = moviesdb.get_movie_across_tables_by_id(id)
     return movie, 200
 
 
@@ -37,25 +37,102 @@ def create_movie():
     description = data['description']
     imdb_rating = data['imdb_rating']
     year = data['year']
-    moviesdb.add_movie(title, description, imdb_rating, year)
+    genres = data['genres']
+    directors = data['directors']
+    movie_id = moviesdb.add_movie(title, description, imdb_rating, year)
+
+    if type(directors) is list:
+        for director in directors:
+            if type(director) is (int or float):
+                moviedirector.add_reference(movie_id, int(director))
+            else:
+                try:
+                    d_name = director.split()[0]
+                    d_lname = director.split()[1]
+                    if not directordb.director_exists(d_name, d_lname):
+                        director_id = directordb.add_director(d_name, d_lname)
+                        moviedirector.add_reference(movie_id, director_id)
+                    elif directordb.director_exists(d_name, d_lname):
+                        director_id = directordb.get_director_by_fullname(d_name, d_lname)
+                        moviedirector.add_reference(movie_id, director_id)
+                except IndexError:
+                    abort(404, 'Problem adding director, please check instructions of payload'),
+
+    if type(genres) is list:
+        for genre in genres:
+            if type(genre) is (int or float):
+                moviegenre.add_reference(movie_id, int(genre))
+            else:
+                try:
+                    genre = str(genre)
+                    if not genredb.genre_exists(genre):
+                        genre_id = genredb.add_genre(genre)
+                        moviegenre.add_reference(movie_id, genre_id)
+                    elif genredb.genre_exists(genre):
+                        genre_id = genredb.get_genre_id_by_name(genre)
+                        moviegenre.add_reference(movie_id, genre_id)
+                except IndexError:
+                    abort(404, 'Problem adding Genre, Please Check instructions of payload'),
     return "Movie has been Added", 201
 
 
-@app.route('/api/movies/<int:id>', methods=['PUT'])
-def update_movie(id):
+@app.route('/api/movies/<int:movie_id>', methods=['PUT'])
+def update_movie(movie_id):
     data = request.get_json()
     title = data['title']
     description = data['description']
     imdb_rating = data['imdb_rating']
     year = data['year']
-    moviesdb.update_movie(id, title, description, imdb_rating, year)
+    genres = data['genres']
+    directors = data['directors']
+    moviesdb.update_movie(movie_id, title, description, imdb_rating, year)
+
+    if type(directors) is list:
+        for director in directors:
+            if type(director) is (int or float):
+                moviedirector.add_reference(movie_id, int(director))
+            else:
+                try:
+                    d_name = director.split()[0]
+                    d_lname = director.split()[1]
+                    if not directordb.director_exists(d_name, d_lname):
+                        director_id = directordb.add_director(d_name, d_lname)
+                        moviedirector.add_reference(movie_id, director_id)
+                    elif directordb.director_exists(d_name, d_lname):
+                        director_id = directordb.get_director_by_fullname(d_name, d_lname)
+                        moviedirector.add_reference(movie_id, director_id)
+                except IndexError:
+                    abort(404, 'Problem adding director, please check instructions of payload'),
+
+    if type(genres) is list:
+        for genre in genres:
+            if type(genre) is (int or float):
+                moviegenre.add_reference(movie_id, int(genre))
+            else:
+                try:
+                    genre = str(genre)
+                    if not genredb.genre_exists(genre):
+                        genre_id = genredb.add_genre(genre)
+                        moviegenre.add_reference(movie_id, genre_id)
+                    elif genredb.genre_exists(genre):
+                        genre_id = genredb.get_genre_id_by_name(genre)
+                        moviegenre.add_reference(movie_id, genre_id)
+                except IndexError:
+                    abort(404, 'Problem adding Genre, Please Check instructions of payload'),
     return "Movie Has Been Updated", 200
 
 
 @app.route('/api/movies/<int:id>', methods=['DELETE'])
 def delete_movie(id):
     moviesdb.delete_movie(id)
+    moviegenre.delete_references_by_movie_id(id)
+    moviedirector.delete_references_by_movie_id(id)
     return "Movie has been Deleted", 200
+
+@app.route('/api/movies/top_10')
+def get_top():
+    movies = moviesdb.get_top10()
+    return movies
 
 
 @app.route('/api/genres')
@@ -67,7 +144,7 @@ def get_genres():
 @app.route('/api/genres/<int:id>')
 def get_genre_by_id(id):
     genre = genredb.get_genre_by_id(id)
-    return genre.to_dict(), 200
+    return genre, 200
 
 
 @app.route('/api/genres', methods=['POST'])
@@ -89,6 +166,7 @@ def update_genre(id):
 @app.route('/api/genres/<int:id>', methods=['DELETE'])
 def delete_genre(id):
     genredb.delete_genre(id)
+    moviegenre.delete_references_by_genre_id(id)
     return "Genre has been Deleted", 200
 
 
@@ -125,6 +203,7 @@ def update_director(id):
 @app.route('/api/directors/<int:id>', methods=['DELETE'])
 def delete_director(id):
     directordb.delete_director(id)
+    moviedirector.delete_references_by_director_id(id)
     return "director has been Deleted", 200
 
 
@@ -146,13 +225,6 @@ def search_results():
     query = request.args.get('query')
     movies = moviesdb.search_movies_by_title(f'%{query}%')
     return render_template('search_results.html', movies=movies)
-
-
-@app.route('/api/movies/top_10')
-def get_top():
-    movies = moviesdb.get_top10()
-    return movies
-
 
 @app.route('/movies/<int:idnum>', methods=['POST', 'GET'])
 def movie_info(idnum):

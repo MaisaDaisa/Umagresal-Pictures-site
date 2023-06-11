@@ -12,6 +12,6 @@ directordb = DirectorDatabase()
 moviegenre = MovieGenreConnect()
 moviedirector = MovieDirectorConnect()
 
-print(moviedirector.get_movies_by_by(3))
-for i in moviedirector.get_movies_by_by(3):
-    print(i)
+# curl -X POST -H "Content-Type: application/json" -d '{"title": "Kai KAaci", "description": "ra ubedurbeaaa", "imdb_rating": 6.9, "directors": ["Maisa Best", 1, 5, "Mamida Manqanit"], "genres": [1, 5, 2, 7, 4], "year": 2001}' http://127.0.0.1:5000/api/movies
+
+moviesdb.get_all_movies_across_tables()
