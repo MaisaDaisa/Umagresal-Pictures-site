@@ -20,10 +20,10 @@
     </div>
     <div class="recommendations">
       {% for director in recommended_movies %}
-      <h3>Movie Recommendations for {{ director.f_fullname }}</h3>
+      <h3>Movie Recommendations for {{ director['d_fullname'] }}</h3>
       <ul>
         {% for movie in director['movies'] %}
-        <li>{{ movie.titel }}</li>
+        <li>{{ movie['title'] }}</li>
         {% endfor %}
       </ul>
       {% endfor %}
