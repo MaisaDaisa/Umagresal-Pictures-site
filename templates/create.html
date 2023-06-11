@@ -9,46 +9,19 @@
 		{{ form.csrf_token }}
 		<div>
 			{{ form.title.label }} {{ form.title() }}
-			{% if form.title.errors %}
-				<ul>
-					{% for error in form.title.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
 		</div>
 
 		<div>
 			{{ form.description.label }} {{ form.description() }}
-			{% if form.description.errors %}
-				<ul>
-					{% for error in form.description.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
+
 		</div>
 
 		<div>
 			{{ form.imdb_rating.label }} {{ form.imdb_rating() }}
-			{% if form.imdb_rating.errors %}
-				<ul>
-					{% for error in form.imdb_rating.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
 		</div>
 
 		<div>
 			{{ form.year.label }} {{ form.year() }}
-			{% if form.year.errors %}
-				<ul>
-					{% for error in form.year.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
 		</div>
 
 		<div>
@@ -56,13 +29,9 @@
 			{% for subfield in form.genres %}
 				{{ subfield() }}
 			{% endfor %}
-			{% if form.genres.errors %}
-				<ul>
-					{% for error in form.genres.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
+			{% for i in range(4) %}
+				{{ form.genres[i] }}
+			{% endfor %}
 		</div>
 
 		<div>
@@ -70,24 +39,13 @@
 			{% for subfield in form.directors %}
 				{{ subfield() }}
 			{% endfor %}
-			{% if form.directors.errors %}
-				<ul>
-					{% for error in form.directors.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
+			{% for i in range(4) %}
+				{{ form.directors[i] }}
+			{% endfor %}
 		</div>
 
 		<div>
 			{{ form.image.label }} {{ form.image() }}
-			{% if form.image.errors %}
-				<ul>
-					{% for error in form.image.errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
 		</div>
 
 		<div>

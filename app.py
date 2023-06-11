@@ -277,6 +277,7 @@ def create_movie_form():
         image.save(os.path.join(
             app.instance_path, 'photos', filename
         ))
+        return url_for('create_movie_form')
     return render_template('create.html', form=form)
 
 
