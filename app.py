@@ -89,6 +89,7 @@ def update_movie(movie_id):
     moviesdb.update_movie(movie_id, title, description, imdb_rating, year)
 
     if type(directors) is list:
+        moviedirector.delete_references_by_movie_id(movie_id)
         for director in directors:
             if type(director) is (int or float):
                 moviedirector.add_reference(movie_id, int(director))
@@ -106,6 +107,7 @@ def update_movie(movie_id):
                     abort(404, 'Problem adding director, please check instructions of payload'),
 
     if type(genres) is list:
+        moviegenre.delete_references_by_movie_id(movie_id)
         for genre in genres:
             if type(genre) is (int or float):
                 moviegenre.add_reference(movie_id, int(genre))
