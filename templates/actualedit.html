@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <title>Movie Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/static/upload.css">
+  </head>
+  <body class="overview">
+    <div class="sidebar sb-left">
+      <nav class="mobile-nav">
+        <ul>
+          <li><a href="/"><i class="fa fa-film"></i><span>Movies</span></a></li>
+          <li><a href="/top"><i class="fa fa-trophy"></i><span>Top</span></a></li>
+          <li><a href="/random"><i class="fa fa-random"></i><span>Random</span></a></li>
+          <li><a href="/upload"><i class="fa fa-rss"></i><span>Upload</span></a></li>
+          <li><a href="/delete"><i class="fa fa-eraser"></i><span>Delete</span></a></li>
+          <li class="active"><a href="/edit"><i class="fa fa-pencil"></i><span>Edit</span></a></li>
+          <li><a href="/aboutus"><i class="fa fa-heart"></i><span>About Us</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="site-container">
+      <main id="main">
+        <header id="main-header">
+          <div class="inner-container">
+            <div class="sb-toggle-left">
+              <span class="menu-icon"></span>
+              <span class="menu-icon-text">Menu</span>
+            </div>
+            <h1><a><img src="{{ url_for('static', filename='umagresal-removebg-preview.png') }}" width="300" height="75" href="/"></a></h1>
+            <ul class="header-nav">
+            </ul>
+          </div>
+        </header>
+        <div id="header-secondary">
+          <div class="inner-container">
+
+          </div>
+        </div>
+        <section id="content" class="inner-container">
+
+        </section>
+      </main>
+      <div class="main-wrapper">
+        <h3>Upload</h3>
+        <div class="form-wrapper">
+          <form id="upload-form" method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div>
+                <label for="movie_id">
+                    ID
+                </label>
+                {{ form.movie_id(class="form-control", id="id", placeholder="ID", type="number", step=1) }}
+            </div>
+
+            <div>
+              {{ form.name.label }} {{ form.name() }}
+            </div>
+
+            <div>
+               {{ form.description.label }} {{ form.description() }}
+            </div>
+
+            <div>
+                <label for="year">
+                    Year
+                </label>
+                {{ form.year(class="form-control", id="year", placeholder="Year", type="number", min=1990, max=2030, step=1) }}
+            </div>
+            <div>
+                <label for="rating">
+                    Rating
+                </label>
+                {{ form.rating(class="form-control", id="rating", placeholder="Rating", type="number", min=0, max=10, step=0.1) }}
+            </div>
+            <div class="wrapper">
+              <label for="project-image">
+                Directors
+              </label>
+              <div><label>
+                <input type="text" name="input_array_director[]" placeholder="Input Director's First and Last Name Here" />
+              </label></div>
+            </div>
+
+            <p><button id="Array_name" class="add_name_fields">Add More Directors</button></p>
+
+            <div class="genree">
+              <label for="project-image">
+                Genres
+              </label>
+              <div>
+                <label>
+                  <input name="input_array_genre[]" type="text" class="search-input" value="" placeholder="Input Genres Here" list="genres">
+                </label>
+                <datalist id="genres">
+                  {% for genre in genres %}
+                  <option value="{{ genre.genre }}">
+                  {% endfor %}
+                </datalist>
+              </div>
+              <div class="genre-buttons">
+                <button class="add_genre_fields">Add More Genres</button>
+              </div>
+            </div>
+
+            <div>
+              <label for="project-image">
+                Upload Banners
+              </label>
+               {{ form.banner(class="form-control-file") }}
+            </div>
+
+            <div class="button">
+              <input type="submit" value="Upload" />
+            </div>
+
+            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+            <script>
+              $(document).ready(function() {
+                //Add Input Fields for directors
+                var max_fields_director = 10; //Maximum allowed input fields
+                var wrapper = $(".wrapper"); //Input fields wrapper
+                var add_button = $(".add_name_fields"); //Add button class or ID
+                var x = 1; //Initial input field is set to 1
+
+                //When user click on add input button
+                $(add_button).click(function(e) {
+                  e.preventDefault();
+                  //Check maximum allowed input fields
+                  if (x < max_fields_director) {
+                    x++; //Increment field counter
+                    $(wrapper).append('<div><input type="text" name="input_array_director[]" placeholder="Input Director\'s First and Last Name Here"/><a href="#" class="remove_field">Remove</a></div>'); //Add input field
+                  }
+                });
+                //when user click on remove button
+                $(wrapper).on("click", ".remove_field", function(e) {
+                  e.preventDefault();
+                  $(this).parent('div').remove(); //Remove input field
+                  x--; //Decrement field counter
+                });
+
+                //Add Input Fields for genres
+                var max_fields_genre = 10; //Maximum allowed input fields
+                var wrapper_genre = $(".genree"); //Input fields wrapper
+
+                //When user click on add input button
+                wrapper_genre.on("click", ".add_genre_fields", function(e) {
+                  e.preventDefault();
+                  //Check maximum allowed input fields
+                  if (wrapper_genre.find('input[name="input_array_genre[]"]').length < max_fields_genre) {
+                    //add input field
+                    wrapper_genre.append('<div><input name="input_array_genre[]" type="text" class="search-input" value="" placeholder="Input Genres Here" list="genres"><datalist id="genres">{% for genre in genres %}<option value="{{ genre.genre }}">{% endfor %}</datalist> <a href="#" class="remove_field_genre">Remove</a></div>');
+                    //move add button to end
+                    wrapper_genre.append($(".genre-buttons"));
+                  }
+                });
+
+                //when user click on remove button
+                wrapper_genre.on("click", ".remove_field_genre", function(e) {
+                  e.preventDefault();
+                  $(this).parent('div').remove(); //remove input field
+                });
+              });
+
+              function updateFilename(input) {
+                document.getElementById("filename").textContent = input.value.split("\\").pop();
+              }
+
+            </script>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
