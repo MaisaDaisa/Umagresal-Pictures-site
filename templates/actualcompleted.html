@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Movie Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="/static/delete.css">
+  </head>
+  <body class="overview">
+    <div class="sidebar sb-left">
+      <nav class="mobile-nav">
+        <ul>
+          <li class="active"><a href="/"><i class="fa fa-film"></i><span>Movies</span></a></li>
+          <li><a href="/top"><i class="fa fa-trophy"></i><span>Top</span></a></li>
+          <li><a href="/random"><i class="fa fa-random"></i><span>Random</span></a></li>
+          <li><a href="/upload"><i class="fa fa-rss"></i><span>Upload</span></a></li>
+          <li><a href="/delete"><i class="fa fa-eraser"></i><span>Delete</span></a></li>
+          <li><a href="/edit"><i class="fa fa-pencil"></i><span>Edit</span></a></li>
+          <li><a href="/aboutus"><i class="fa fa-heart"></i><span>About Us</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="site-container">
+      <main id="main">
+        <header id="main-header">
+          <div class="inner-container">
+            <div class="sb-toggle-left">
+              <span class="menu-icon"></span>
+              <span class="menu-icon-text">Menu</span>
+            </div>
+            <h1><a><img src="{{ url_for('static', filename='umagresal-removebg-preview.png') }}" width="300" height="75" href="/"></a></h1>
+            <ul class="header-nav">
+            </ul>
+          </div>
+        </header>
+        <div id="header-secondary">
+          <div class="inner-container">
+
+          </div>
+        </div>
+        <section id="content" class="inner-container">
+
+        </section>
+      </main>
+      <style>
+        .jomolungma {
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+          }
+
+          .main-wrapper h1 {
+            margin-bottom: 20px;
+          }
+
+          .form-wrapper {
+            /* Add styles for the form wrapper here */
+          }
+      </style>
+      <div class="jomolungma">
+        <h1>{{ status }}</h1>
+        <div class="jomolungma">
+  </body>
+</html>

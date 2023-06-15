@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Movie Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="/static/delete.css">
+  </head>
+  <body class="overview">
+    <div class="sidebar sb-left">
+      <nav class="mobile-nav">
+        <ul>
+          <li><a href="/"><i class="fa fa-film"></i><span>Movies</span></a></li>
+          <li><a href="/top"><i class="fa fa-trophy"></i><span>Top</span></a></li>
+          <li><a href="/random"><i class="fa fa-random"></i><span>Random</span></a></li>
+          <li><a href="/upload"><i class="fa fa-rss"></i><span>Upload</span></a></li>
+          <li><a href="/delete"><i class="fa fa-eraser"></i><span>Delete</span></a></li>
+          <li><a href="/edit"><i class="fa fa-pencil"></i><span>Edit</span></a></li>
+          <li class="active"><a href="/aboutus"><i class="fa fa-heart"></i><span>About Us</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="site-container">
+      <main id="main">
+        <header id="main-header">
+          <div class="inner-container">
+            <div class="sb-toggle-left">
+              <span class="menu-icon"></span>
+              <span class="menu-icon-text">Menu</span>
+            </div>
+            <h1><a><img src="{{ url_for('static', filename='umagresal-removebg-preview.png') }}" width="300" height="75" href="/"></a></h1>
+            <ul class="header-nav">
+            </ul>
+          </div>
+        </header>
+        <div id="header-secondary">
+          <div class="inner-container">
+
+          </div>
+        </div>
+        <section id="content" class="inner-container">
+
+        </section>
+      </main>
+      <div class="main-wrapper">
+      <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    color: whitesmoke;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 46px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  p {
+    max-width: 700px;
+    min-height: 200px;
+    padding: 0;
+    color: whitesmoke;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 22px;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .square {
+    height: 60px;
+    width: 60px;
+    border: 1px dashed white;
+    margin: 0 0 0 55px;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    transform: rotateZ(44deg);
+    position: relative; /* add this */
+}
+
+.square .icons {
+    position: absolute;
+    transform: rotateZ(-44deg);
+    top: 50%;
+    left: 50%;
+    margin-top: -9px;
+    margin-left: -9px;
+}
+
+  .fa-facebook,
+  .fa-twitter,
+  .fa-dribbbler,
+  .fa-youtube,
+  .fa-dribbble {
+    width: 11px;
+    height: 22px;
+    color: white;
+    font-family: FontAwesome;
+    font-size: 23px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .square:hover .fa-facebook {
+    color: rgba(59, 89, 152, 1)
+  }
+
+  .square:hover .fa-twitter {
+    color: rgba(27, 182, 239, 1)
+  }
+
+  .square:hover .fa-dribbble {
+    color: rgba(199, 59, 111, 1)
+  }
+
+  .square:hover .fa-youtube {
+    color: rgba(229, 45, 39, 1)
+  }
+
+  /* center the content */
+  .center {
+    text-align: center;
+  }
+</style>
+
+<div class="center">
+  <h1>
+    ABOUT US
+    <br>
+    <img src="https://image.ibb.co/nk616F/Layer_1_copy_21.png" width="47" height="11" align="center">
+  </h1>
+  <article>
+    <p>
+      This Project has been made by one and only Team VI, that consists of Nikoloz Maisadze, Dimitri Kavteladze, Giorgi Utsunashvili, Nino Machitidze and Papuna Javashvili. With this site, you're able to search for Movies And filter them by genre search and year. You also have the ability to see top imdb rated movies. The user also has the ability to upload, delete and edit the existing movies. This project uses sqlite 3 for its database. The backend side of the site works with flask and flask wtf form. The fountain site has been provided by fr0zen on codepen.io And there has been altered to our site's needs. To see the detailed explanation of this project, please click on the youtube button down below
+    </p>
+  </article>
+  <div class="social_icons">
+    <div class="square">
+      <a href="https://www.youtube.com/watch?v=Y8F-s23myIM" target="_blank" rel="noopener noreferrer" class="icons">
+        <i class="fa fa-youtube" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<link rel="stylesheet" href="/static/about.css">
+<body class="detail">
+  <div class="sidebar sb-left">
+    <nav class="mobile-nav">
+      <ul>
+        <li class="active"><a href="/"><i class="fa fa-film"></i><span>Movies</span></a></li>
+        <li><a href="/top"><i class="fa fa-trophy"></i><span>Top</span></a></li>
+        <li><a href="/random"><i class="fa fa-random"></i><span>Random</span></a></li>
+        <li><a href="/upload"><i class="fa fa-rss"></i><span>Upload</span></a></li>
+        <li><a href="/delete"><i class="fa fa-eraser"></i><span>Delete</span></a></li>
+        <li><a href="/edit"><i class="fa fa-pencil"></i><span>Edit</span></a></li>
+          <li><a href="/aboutus"><i class="fa fa-heart"></i><span>About Us</span></a></li>
+      </ul>
+    </nav>
+  </div>
+    <div id="site-container">
+      <main id="main">
+        <header id="main-header">
+          <div class="inner-container">
+            <div class="sb-toggle-left">
+              <span class="menu-icon"></span>
+              <span class="menu-icon-text">Menu</span>
+            </div>
+            <h1><a><img src="{{ url_for('static', filename='umagresal-removebg-preview.png') }}" width="300" height="75" href="/"></a></h1>
+            <ul class="header-nav">
+              <li><a href="https://facebook.com/" target="_blank" rel="nofollow"><i class="fa fa-facebook"></i></a></li>
+              <li><a href="https://twitter.com" target="_blank" rel="nofollow"><i class="fa fa-twitter"></i></a></li>
+              <li><a href="https://www.instagram.com/" target="_blank" rel="nofollow"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+          </div>
+        </header>
+        <section id="content">
+          <div class="inner-container">
+            <div class="movie-image">
+              <img src="{{ url_for('static', filename='uploads/' + movie.id|string + '.png') }}" alt="Archive" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/' + movie.id|string + '.jpg') }}';">
+              <div class="blue" id="buttonposter">
+                <p><i class="fa fa-play-circle" aria-hidden="true"></i>Play</p>
+              </div>
+            </div>
+            <div class="movie-info">
+              <span class="rating">
+                <b>{{ movie.imdb_rating}}</b>
+              </span>
+              <h1 class="entry-title">{{ movie.title }}</h1>
+              <em class="tagline"></em>
+              <div class="movie-data">
+                <div class="details">
+                  <i class="hd">HD</i>
+                  <span><a href="/?year={{ movie.year }}" rel="tag">{{ movie.year }}</a></span>|<span>{% for genre in used_genres %}<a href="/?genre={{ genre.genre }}" rel="tag">{{ genre.genre }}</a></span> | {% endfor %}
+                </div>
+              </div>
+              <p class="movie-description">
+                <span class="trama">{{ movie.description }}</span>
+                <div class="persons"></div>
+              </p>
+            </div>
+            <section class="disqus">
+              <div class="inner-container">
+                <div id="disqus_thread"></div>
+              </div>
+            </section>
+          </div>
+          <div id="slideshow">
+          </div>
+          {% for director in recommended_movies %}
+          <h1 class="entry-title">By {{ director.d_fullname }}</h1>
+          <br>
+          <div class="item-container">
+            {% for movie in director['movies'] %}
+            <div class="item" style="opacity: 1; transform: scale(1);">
+                <a href="/movies/{{ movie.id }}">
+                  <div class="item-flip">
+                    <div class="item-inner">
+                       <img src="{{ url_for('static', filename='uploads/' + movie.id|string + '.png') }}" alt="Archive" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/' + movie.id|string + '.jpg') }}';">
+                    </div>
+                    <div class="item-details">
+                      <div class="item-details-inner">
+                        <h2 class="movie-title">{{ movie.title }}</h2>
+                        <p class="movie-description">{{ movie.description }}</p>
+                        <div class="watch-btn">
+                          <div class="imdb-rating" data-content="{{ movie.imdb_rating }}">
+                            <i class="fa fa-star"></i>{{ movie.imdb_rating }}</div>
+                          <span class="movie-date">{{ movie.year }}</span>
+                          <span>Play</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </section>
+      </main>
+    </div>
+    <script src="/static/about.js"></script>

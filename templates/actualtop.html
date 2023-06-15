@@ -1,0 +1,108 @@
+
+<link rel="stylesheet" href="/static/index.css">
+<body class="overview">
+    <div class="sidebar sb-left">
+      <nav class="mobile-nav">
+        <ul>
+          <li><a href="/"><i class="fa fa-film"></i><span>Movies</span></a></li>
+          <li class="active"><a href="/top"><i class="fa fa-trophy"></i><span>Top</span></a></li>
+          <li><a href="/random"><i class="fa fa-random"></i><span>Random</span></a></li>
+          <li><a href="/upload"><i class="fa fa-rss"></i><span>Upload</span></a></li>
+          <li><a href="/delete"><i class="fa fa-eraser"></i><span>Delete</span></a></li>
+          <li><a href="/edit"><i class="fa fa-pencil"></i><span>Edit</span></a></li>
+          <li><a href="/aboutus"><i class="fa fa-heart"></i><span>About Us</span></a></li>
+        </ul>
+      </nav>
+    </div>
+    <div id="site-container">
+      <main id="main">
+        <header id="main-header">
+          <div class="inner-container">
+            <div class="sb-toggle-left">
+              <span class="menu-icon"></span>
+              <span class="menu-icon-text">Menu</span>
+            </div>
+            <h1><a><img src="{{ url_for('static', filename='umagresal-removebg-preview.png') }}" width="300" height="75" href="/"></a></h1>
+            <ul class="header-nav">
+            </ul>
+          </div>
+        </header>
+        <section id="content" class="inner-container">
+          <div class="item-container">
+            {% for movie in movies %}
+            <div class="item" style="opacity: 1; transform: scale(1);">
+                <a href="/movies/{{ movie.id }}">
+                  <div class="item-flip">
+                    <div class="item-inner">
+                       <img src="{{ url_for('static', filename='uploads/' + movie.id|string + '.png') }}" alt="Archive" onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/' + movie.id|string + '.jpg') }}';">
+                    </div>
+                    <div class="item-details">
+                      <div class="item-details-inner">
+                        <h2 class="movie-title">{{ movie.title }}</h2>
+                        <p class="movie-description">{{ movie.description }}</p>
+                        <div class="watch-btn">
+                          <div class="imdb-rating" data-content="{{ movie.imdb_rating }}">
+                            <i class="fa fa-star"></i>{{ movie.imdb_rating }}</div>
+                          <span class="movie-date">{{ movie.year }}</span>
+                          <span>Play</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+       var genreForm = document.getElementById('genreform');
+  var yearForm = document.getElementById('yearform');
+  var searchForm = document.getElementById('searchform');
+
+  genreForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    var formData = new FormData(genreForm);
+    var searchParams = new URLSearchParams(formData).toString();
+    var yearValue = yearForm.querySelector('input[type="year"]').value;
+    var searchValue = searchForm.querySelector('input[name="search"]').value;
+    if (yearValue) {
+      searchParams += '&year=' + yearValue;
+    }
+    if (searchValue) {
+      searchParams += '&search=' + encodeURIComponent(searchValue);
+    }
+    window.location.href = '?' + searchParams;
+  });
+
+  yearForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    var formData = new FormData(yearForm);
+    var searchParams = new URLSearchParams(formData).toString();
+    var genreValue = genreForm.querySelector('input[name="genre"]').value;
+    var searchValue = searchForm.querySelector('input[name="search"]').value;
+    if (genreValue) {
+      searchParams += '&genre=' + encodeURIComponent(genreValue);
+    }
+    if (searchValue) {
+      searchParams += '&search=' + encodeURIComponent(searchValue);
+    }
+    window.location.href = '?' + searchParams;
+  });
+
+  searchForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    var formData = new FormData(searchForm);
+    var searchParams = new URLSearchParams(formData).toString();
+    var genreValue = genreForm.querySelector('input[name="genre"]').value;
+    var yearValue = yearForm.querySelector('input[type="year"]').value;
+    if (genreValue) {
+      searchParams += '&genre=' + encodeURIComponent(genreValue);
+    }
+    if (yearValue) {
+      searchParams += '&year=' + yearValue;
+    }
+    window.location.href = '?' + searchParams;
+  });
+    </script>
