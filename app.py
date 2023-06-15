@@ -17,7 +17,7 @@ app.config['DATABASE'] = '/movies.db'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 moviesdb = MoviesDatabase()
 genredb = GenreDatabase()
@@ -141,6 +141,7 @@ def delete_movie(id):
     moviedirector.delete_references_by_movie_id(id)
     return "Movie has been Deleted", 200
 
+
 @app.route('/api/movies/top')
 def get_top():
     movies = moviesdb.get_movie_top10()
@@ -219,6 +220,7 @@ def delete_director(id):
     return "director has been Deleted", 200
 
 
+# This IS A NON API SECTION PLEASE TYPE ANYTHING DOWN THERE WITH HTML CODE
 # Display Section of site, where html is being used
 @app.route('/')
 def index():
@@ -227,19 +229,10 @@ def index():
     year = request.args.get('year')
     genres = genredb.get_genres_by_alphabet()
     movies = moviesdb.get_movie_across_tables_by_search(search, genre, year)
-    print(movies)
     return render_template('actualindex.html', movies=movies, genres=genres)
-
-@app.route('/upload')
-def upload_page():
-    directors = directordb.get_directors_order_by_lname()
-    genres = genredb.get_genres_by_alphabet()
-    return render_template('upload.html', directors=directors, genres=genres)
 
 @app.route('/top')
 def top_index():
-    directors = directordb.get_directors_order_by_lname()
-    genres = genredb.get_genres_by_alphabet()
     movies = moviesdb.get_movie_top10()
     return render_template('actualtop.html', movies=movies)
 
@@ -249,12 +242,10 @@ def about_us_page():
 
 @app.route('/random', methods=['GET'])
 def random_info():
+
     idnum = randint(1, len(moviesdb.get_all_movies()))
     movie = moviesdb.get_movie_by_id(idnum)
-
-    # Now we Search for Directors
     participated_directors = moviedirector.get_directos_by_movie(idnum)
-    # All used genres used in Movie
     used_genres = moviegenre.get_genres_by_movie(idnum)
 
     recommended_movies = []
@@ -280,7 +271,6 @@ def upload():
         directors = request.form.getlist('input_array_director[]')
         banner_file = form.banner.data
 
-
         movie_id = moviesdb.add_movie(title, description, imdb_rating, year)
         if banner_file:
             try:
@@ -302,6 +292,7 @@ def upload():
                 # handle the error
                 status = f"Error saving banner image: {e}"
                 return render_template("actualcompleted.html", status=status)
+
         if type(directors) is list:
             for director in directors:
                 if type(director) is (int or float):
@@ -334,6 +325,7 @@ def upload():
                             moviegenre.add_reference(movie_id, genre_id)
                     except IndexError:
                         abort(404, 'Problem adding Genre, Please Check instructions of payload'),
+
         status = "Successfuly Edited"
         return render_template('actualcompleted.html', status=status)
     return render_template('actualupload.html', form=form, genres=genres)
@@ -401,9 +393,9 @@ def edit_movie_page():
                     os.remove(filepath)
                 img.save(filepath)
             except IOError as e:
-                # handle the error
                 status = f"Error saving banner image: {e}"
                 return render_template("actualcompleted.html", status=status)
+
         if type(directors) is list:
             moviedirector.delete_references_by_movie_id(movie_id)
             for director in directors:
@@ -421,6 +413,7 @@ def edit_movie_page():
                             moviedirector.add_reference(movie_id, director_id)
                     except IndexError:
                         abort(404, 'Problem adding director, please check instructions of payload'),
+
         if type(genres) is list:
             moviegenre.delete_references_by_movie_id(movie_id)
             for genre in genres:
@@ -443,11 +436,9 @@ def edit_movie_page():
 
 @app.route('/movies/<int:idnum>', methods=['GET'])
 def movie_info(idnum):
-    movie = moviesdb.get_movie_by_id(idnum)
 
-    # Now we Search for Directors
+    movie = moviesdb.get_movie_by_id(idnum)
     participated_directors = moviedirector.get_directos_by_movie(idnum)
-    # All used genres used in Movie
     used_genres = moviegenre.get_genres_by_movie(idnum)
 
     recommended_movies = []
@@ -455,7 +446,6 @@ def movie_info(idnum):
         d_movies = moviedirector.get_movies_by_director_id(direcotor["d_id"])
         recommended_movies.append({'d_id': direcotor["d_id"], 'd_fullname': direcotor['d_fullname'], 'movies': d_movies})
     print(recommended_movies)
-
 
     if movie is None:
         return "No Page Found"
