@@ -40,6 +40,20 @@ class MoviesDatabase:
             return None
         return dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row))
 
+    def get_movie_id_by_title(self, title):
+        self.cursor.execute("""
+               SELECT id FROM movies WHERE title=?
+           """, (title,))
+        rows = self.cursor.fetchall()
+        return [dict(zip(('id',), row)) for row in rows]
+
+    def get_movie_titles(self):
+        self.cursor.execute("""
+            SELECT title FROM movies
+        """,)
+        rows = self.cursor.fetchall()
+        return [dict(zip(('title',), row)) for row in rows]
+
 
     def get_all_movies(self):
         self.cursor.execute("""
@@ -76,19 +90,62 @@ class MoviesDatabase:
             return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year', 'directors', 'genres'),
                              (row[0], row[1], row[2], row[3], row[4], [int(d) for d in row[5].split(',')], [int(g) for g in row[6].split(',')])))]
 
-    def get_top10(self):
+    def get_movie_top10(self):
         self.cursor.execute("""
-           SELECT m.id, m.title, m.description, m.imdb_rating, m.year, GROUP_CONCAT(DISTINCT md.director_id) AS directors, GROUP_CONCAT(DISTINCT mg.genre_id) AS genres
+                SELECT m.id, m.title, m.description, m.imdb_rating, m.year, GROUP_CONCAT(DISTINCT md.director_id) AS directors, GROUP_CONCAT(DISTINCT mg.genre_id) AS genres
                 FROM movies as m
                 JOIN movie_director as md ON m.id = md.movie_id
                 JOIN movie_genre as mg ON m.id = mg.movie_id
                 GROUP BY m.id, m.title
-                ORDER BY imdb_rating DESC LIMIT 10;
-           """)
+                ORDER BY m.imdb_rating DESC LIMIT 10;
+                   """,)
+
         rows = self.cursor.fetchall()
         return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year', 'directors', 'genres'),
                          (row[0], row[1], row[2], row[3], row[4], [int(d) for d in row[5].split(',')],
                           [int(g) for g in row[6].split(',')]))) for row in rows]
+
+    def get_movie_across_tables_by_search(self, search=None, genre=None, year=None):
+        sql_where = ""
+        sql_arguments = []
+        and_needed = False
+        if search or genre or year:
+            sql_where = "WHERE"
+        if search is not None:
+            sql_arguments.append(f"%{search}%")
+            sql_where += " title LIKE ?"
+            and_needed = True
+        if genre is not None:
+            self.cursor.execute("SELECT g_id FROM genres WHERE genre=?", (genre,))
+            genre_id = self.cursor.fetchone()
+            if genre_id:
+                if and_needed:
+                    sql_where += " AND"
+                sql_arguments.append(genre_id[0])
+                sql_where += " mg.genre_id = ?"
+                and_needed = True
+        if year is not None:
+            sql_arguments.append(year)
+            if and_needed:
+                sql_where += " AND"
+            sql_where += " year = ?"
+
+        self.cursor.execute(f"""
+            SELECT m.id, m.title, m.description, m.imdb_rating, m.year, GROUP_CONCAT(DISTINCT md.director_id) AS directors, GROUP_CONCAT(DISTINCT mg.genre_id) AS genres
+            FROM movies AS m
+            JOIN movie_director AS md ON m.id = md.movie_id
+            JOIN movie_genre AS mg ON m.id = mg.movie_id
+            {sql_where}
+            GROUP BY m.id, m.title;
+        """, tuple(sql_arguments))
+
+        rows = self.cursor.fetchall()
+        if rows is None:
+            return None
+        else:
+            return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year', 'directors', 'genres'),
+                             (row[0], row[1], row[2], row[3], row[4], [int(d) for d in row[5].split(',')],
+                              [int(g) for g in row[6].split(',')]))) for row in rows]
 
 
     def get_movies_by_year(self, year):
@@ -108,6 +165,8 @@ class MoviesDatabase:
            """, (genre_id,))
         rows = self.cursor.fetchall()
         return [dict(zip(('id', 'title', 'description', 'imdb_rating', 'year'), row)) for row in rows]
+
+
 
     def search_movies_by_title(self, pattern):
         self.cursor.execute("""
