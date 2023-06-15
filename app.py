@@ -4,15 +4,21 @@ from Database import DirectorDatabase
 from Database import GenreDatabase
 from Database import MovieGenreConnect
 from Database import MovieDirectorConnect
-from flask import Flask, request, render_template, abort, url_for, redirect
-from MyForm import MyForm
+from flask import Flask, request, render_template, abort, redirect
+from MyForm import MovieForm
+from MyForm import DeleteForm
+from MyForm import EditForm
 from werkzeug.utils import secure_filename
+from PIL import Image
 import os
-import sqlite3
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['DATABASE'] = '/movies.db'
-app.config['SECRET_KEY'] = 'your-secret-key'
+app.secret_key = "secret key"
+app.config['UPLOAD_FOLDER'] = 'static/uploads/'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 moviesdb = MoviesDatabase()
 genredb = GenreDatabase()
 directordb = DirectorDatabase()
@@ -20,8 +26,7 @@ moviegenre = MovieGenreConnect()
 moviedirector = MovieDirectorConnect()
 
 
-# API Section for developers to use
-# these use /api as main route
+
 @app.route('/api/movies')
 def get_movies():
     movies = moviesdb.get_all_movies_across_tables()
@@ -138,7 +143,7 @@ def delete_movie(id):
 
 @app.route('/api/movies/top')
 def get_top():
-    movies = moviesdb.get_top10()
+    movies = moviesdb.get_movie_top10()
     return movies
 
 
