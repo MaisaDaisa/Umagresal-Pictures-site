@@ -1,7 +1,7 @@
 import sqlite3
 
 
-path = '/home/maisadaisa/GroupProject/movies.db'
+path = '/home/maisadaisa/Umagresal-Pictures-site/movies.db'
 class MoviesDatabase:
     def __init__(self):
         self.conn = sqlite3.connect(path, check_same_thread=False)
