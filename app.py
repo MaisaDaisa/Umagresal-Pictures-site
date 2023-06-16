@@ -326,7 +326,7 @@ def upload():
                     except IndexError:
                         abort(404, 'Problem adding Genre, Please Check instructions of payload'),
 
-        status = "Successfuly Edited"
+        status = "Successfuly Added"
         return render_template('actualcompleted.html', status=status)
     return render_template('actualupload.html', form=form, genres=genres)
 
