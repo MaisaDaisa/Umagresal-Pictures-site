@@ -1,4 +1,4 @@
-# GroupProject
+# Umagresal Pictures
 
 This Project has been made by one and only Team VI, that consists of Nikoloz Maisadze, Dimitri Kavteladze, Giorgi Utsunashvili, Nino Machitidze and Papuna Javashvili.
 ## Main Goal
