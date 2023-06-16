@@ -453,5 +453,5 @@ def movie_info(idnum):
         return render_template('actualabout.html', movie=movie, participated_directors=participated_directors,
                                used_genres=used_genres, recommended_movies=recommended_movies)
 
-with app.app_context():
-    app.run()
+# with app.app_context():
+#     app.run()
