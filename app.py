@@ -13,7 +13,7 @@ from PIL import Image
 import os
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
-app.config['DATABASE'] = '/movies.db'
+app.config['DATABASE'] = '/home/maisadaisa/GroupProject/movies.db'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024

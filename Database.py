@@ -1,9 +1,10 @@
 import sqlite3
 
 
+path = '/home/maisadaisa/GroupProject/movies.db'
 class MoviesDatabase:
     def __init__(self):
-        self.conn = sqlite3.connect('movies.db', check_same_thread=False)
+        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS movies (
@@ -199,7 +200,7 @@ class MoviesDatabase:
 class GenreDatabase:
 
     def __init__(self):
-        self.conn = sqlite3.connect('movies.db', check_same_thread=False)
+        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS genres (
@@ -281,7 +282,7 @@ class GenreDatabase:
 
 class DirectorDatabase:
     def __init__(self):
-        self.conn = sqlite3.connect('movies.db', check_same_thread=False)
+        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS directors (
@@ -364,7 +365,7 @@ class DirectorDatabase:
 
 class MovieGenreConnect:
     def __init__(self):
-        self.conn = sqlite3.connect('movies.db', check_same_thread=False)
+        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS movie_genre (
@@ -434,7 +435,7 @@ class MovieGenreConnect:
 class MovieDirectorConnect:
 
     def __init__(self):
-        self.conn = sqlite3.connect('movies.db', check_same_thread=False)
+        self.conn = sqlite3.connect(path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS movie_director (
