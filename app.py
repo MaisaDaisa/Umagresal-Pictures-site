@@ -16,7 +16,6 @@ app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['DATABASE'] = '/home/maisadaisa/Umagresal-Pictures-site/movies.db'
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 moviesdb = MoviesDatabase()
 genredb = GenreDatabase()
